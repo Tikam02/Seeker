@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seeker - Complete Your Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #f1f5f9;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --seeker-gradient: linear-gradient(135deg, #667eea 0%, #6366f1 100%);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated Background */
+        .bg-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            top: -150px;
+            left: -150px;
+        }
+
+        .shape2 {
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.08);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: 5s;
+        }
+
+        .shape3 {
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.06);
+            top: 50%;
+            right: 10%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Main Container */
+        .onboarding-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--light-gray);
+            z-index: -1;
+        }
+
+        .step.completed:not(:last-child)::after {
+            background: var(--primary);
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active .step-circle {
+            background: var(--gradient);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.1);
+        }
+
+        .step.completed .step-circle {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Container */
+        .form-container {
+            padding: 2rem;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Form Elements */
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 1.75rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-header p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #ef4444;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Service Categories */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .category-card {
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-name {
+            font-size: 0.85rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Location Input */
+        .location-group {
+            position: relative;
+        }
+
+        .location-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .location-input {
+            padding-left: 2.5rem;
+        }
+
+        .detect-location {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .detect-location:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Time Slots */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .time-slot {
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .time-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-slot.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .time-slot-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-slot-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .time-slot-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: wave 1s ease-in-out;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-subtitle {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .benefits-list {
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--light-gray);
+            border-radius: 12px;
+            animation: slideInLeft 0.5s ease both;
+        }
+
+        .benefit-item:nth-child(1) { animation-delay: 0.1s; }
+        .benefit-item:nth-child(2) { animation-delay: 0.2s; }
+        .benefit-item:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .benefit-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .benefit-text {
+            flex: 1;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .success-animation {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .success-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-checkmark {
+            color: white;
+            font-size: 3rem;
+            animation: checkmark 0.5s ease-out 0.3s both;
+        }
+
+        @keyframes checkmark {
+            from {
+                transform: scale(0) rotate(-180deg);
+            }
+            to {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .success-title {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .success-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Avatar Upload */
+        .avatar-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            font-size: 3rem;
+            color: var(--gray);
+        }
+
+        .avatar-upload-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-upload-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--light-gray);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 640px) {
+            .onboarding-container {
+                margin: 1rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .time-slots {
+                grid-template-columns: 1fr;
+            }
+
+            .step-label {
+                display: none;
+            }
+
+            .progress-container {
+                padding: 1.5rem 1.5rem 1rem;
+            }
+        }
+
+        /* Checkbox Style */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            color: var(--dark);
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        /* Gender Selection */
+        .gender-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .gender-option {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gender-option:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .gender-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-shapes">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+
+    <div class="onboarding-container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="step active" data-step="0">
+                    <div class="step-circle">👋</div>
+                    <span class="step-label">Welcome</span>
+                </div>
+                <div class="step" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Profile</span>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Location</span>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Services</span>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label">Schedule</span>
+                </div>
+                <div class="step" data-step="5">
+                    <div class="step-circle">✨</div>
+                    <span class="step-label">Complete</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <!-- Step 0: Welcome -->
+            <div class="form-step active" data-step="0">
+                <div class="welcome-screen">
+                    <div class="welcome-icon">🎉</div>
+                    <h2 class="welcome-title">Welcome to Seeker!</h2>
+                    <p class="welcome-subtitle">Your phone number +91 98765 43210 has been verified. Let's set up your profile to connect you with the best helpers in your area.</p>
+                    
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <span class="benefit-icon">✅</span>
+                            <span class="benefit-text">Access to 10,000+ verified helpers</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">💰</span>
+                            <span class="benefit-text">Direct payments with zero commission</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">⚡</span>
+                            <span class="benefit-text">Get help in under 30 minutes</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="nextStep()">Let's Get Started →</button>
+                </div>
+            </div>
+
+            <!-- Step 1: Basic Profile -->
+            <div class="form-step" data-step="1">
+                <div class="form-header">
+                    <h2>Tell us about yourself</h2>
+                    <p>This helps helpers serve you better</p>
+                </div>
+
+                <div class="avatar-upload">
+                    <div class="avatar-preview" onclick="document.getElementById('avatarInput').click()">
+                        <span class="avatar-placeholder">📷</span>
+                    </div>
+                    <input type="file" id="avatarInput" style="display: none;" accept="image/*" onchange="previewAvatar(event)">
+                    <button class="avatar-upload-btn" onclick="document.getElementById('avatarInput').click()">Upload Photo</button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-input" id="fullName" placeholder="Enter your full name">
+                    <span class="error-message">Please enter your name</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-input" id="email" placeholder="your.email@example.com">
+                    <span class="error-message">Please enter a valid email</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <div class="gender-options">
+                        <div class="gender-option" onclick="selectGender(this, 'male')">
+                            <div>👨</div>
+                            <div>Male</div>
+                        </div>
+                        <div class="gender-option" onclick="selectGender(this, 'female')">
+                            <div>👩</div>
+                            <div>Female</div>
+                        </div>
+                        <div class="gender-option" onclick="selectGender(this, 'other')">
+                            <div>🤝</div>
+                            <div>Other</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="validateAndNext(1)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Location -->
+            <div class="form-step" data-step="2">
+                <div class="form-header">
+                    <h2>Where do you need services?</h2>
+                    <p>We'll connect you with nearby helpers</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Home Address *</label>
+                    <div class="location-group">
+                        <span class="location-icon">📍</span>
+                        <input type="text" class="form-input location-input" id="address" placeholder="Enter your complete address">
+                    </div>
+                    <div class="detect-location" onclick="detectLocation()">
+                        <span>📍</span>
+                        <span>Use current location</span>
+                    </div>
+                    <span class="error-message">Please enter your address</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Landmark</label>
+                    <input type="text" class="form-input" id="landmark" placeholder="Near any landmark (optional)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pincode *</label>
+                    <input type="text" class="form-input" id="pincode" placeholder="6-digit pincode" maxlength="6">
+                    <span class="error-message">Please enter a valid pincode</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="saveAddress">
+                    <label for="saveAddress" class="checkbox-label">Save this as my default address</label>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="validateAndNext(2)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Service Preferences -->
+            <div class="form-step" data-step="3">
+                <div class="form-header">
+                    <h2>What services do you need?</h2>
+                    <p>Select all categories you're interested in</p>
+                </div>
+
+                <div class="categories-grid">
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🏠</div>
+                        <div class="category-name">Home Cleaning</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🔧</div>
+                        <div class="category-name">Repairs</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">💻</div>
+                        <div class="category-name">Tech Support</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🚚</div>
+                        <div class="category-name">Moving</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">👨‍🍳</div>
+                        <div class="category-name">Cooking</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">✂️</div>
+                        <div class="category-name">Beauty</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🎨</div>
+                        <div class="category-name">Painting</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">⚡</div>
+                        <div class="category-name">Electrical</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🚿</div>
+                        <div class="category-name">Plumbing</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🌱</div>
+                        <div class="category-name">Gardening</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">🐕</div>
+                        <div class="category-name">Pet Care</div>
+                    </div>
+                    <div class="category-card" onclick="toggleCategory(this)">
+                        <div class="category-icon">📚</div>
+                        <div class="category-name">Tutoring</div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="validateAndNext(3)">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Availability -->
+            <div class="form-step" data-step="4">
+                <div class="form-header">
+                    <h2>When do you usually need help?</h2>
+                    <p>This helps us show you available helpers</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Preferred Time Slots</label>
+                    <div class="time-slots">
+                        <div class="time-slot" onclick="toggleTimeSlot(this)">
+                            <div class="time-slot-icon">🌅</div>
+                            <div class="time-slot-label">Morning</div>
+                            <div class="time-slot-time">6 AM - 12 PM</div>
+                        </div>
+                        <div class="time-slot" onclick="toggleTimeSlot(this)">
+                            <div class="time-slot-icon">☀️</div>
+                            <div class="time-slot-label">Afternoon</div>
+                            <div class="time-slot-time">12 PM - 5 PM</div>
+                        </div>
+                        <div class="time-slot" onclick="toggleTimeSlot(this)">
+                            <div class="time-slot-icon">🌆</div>
+                            <div class="time-slot-label">Evening</div>
+                            <div class="time-slot-time">5 PM - 9 PM</div>
+                        </div>
+                        <div class="time-slot" onclick="toggleTimeSlot(this)">
+                            <div class="time-slot-icon">🌙</div>
+                            <div class="time-slot-label">Night</div>
+                            <div class="time-slot-time">9 PM - 12 AM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">How often do you need services?</label>
+                    <select class="form-input">
+                        <option>Daily</option>
+                        <option>2-3 times a week</option>
+                        <option>Weekly</option>
+                        <option>Bi-weekly</option>
+                        <option>Monthly</option>
+                        <option>As needed</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="emergency">
+                    <label for="emergency" class="checkbox-label">I may need emergency/urgent services</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" class="checkbox-input" id="notifications">
+                    <label for="notifications" class="checkbox-label">Send me notifications about available helpers</label>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="completeOnboarding()">Complete Setup ✓</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Success -->
+            <div class="form-step" data-step="5">
+                <div class="success-screen">
+                    <div class="success-animation">
+                        <div class="success-circle">
+                            <span class="success-checkmark">✓</span>
+                        </div>
+                    </div>
+                    
+                    <h2 class="success-title">You're All Set! 🎊</h2>
+                    <p class="success-message">Your profile is complete and you can now connect with thousands of verified helpers in your area.</p>
+                    
+                    <div class="success-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">247</div>
+                            <div class="stat-label">Helpers nearby</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">4.8</div>
+                            <div class="stat-label">Avg rating</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">15m</div>
+                            <div class="stat-label">Avg response</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="goToDashboard()">Go to Dashboard →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 6;
+
+        function updateProgress() {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                if (index < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (index === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+        }
+
+        function showStep(stepNumber) {
+            const formSteps = document.querySelectorAll('.form-step');
+            formSteps.forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            const targetStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+            }
+            
+            updateProgress();
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps - 1) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function validateAndNext(step) {
+            let isValid = true;
+            
+            if (step === 1) {
+                const fullName = document.getElementById('fullName');
+                const email = document.getElementById('email');
+                
+                if (!fullName.value.trim()) {
+                    showError(fullName);
+                    isValid = false;
+                } else {
+                    hideError(fullName);
+                }
+                
+                if (!email.value.trim() || !isValidEmail(email.value)) {
+                    showError(email);
+                    isValid = false;
+                } else {
+                    hideError(email);
+                }
+            } else if (step === 2) {
+                const address = document.getElementById('address');
+                const pincode = document.getElementById('pincode');
+                
+                if (!address.value.trim()) {
+                    showError(address);
+                    isValid = false;
+                } else {
+                    hideError(address);
+                }
+                
+                if (!pincode.value.trim() || pincode.value.length !== 6) {
+                    showError(pincode);
+                    isValid = false;
+                } else {
+                    hideError(pincode);
+                }
+            } else if (step === 3) {
+                const selectedCategories = document.querySelectorAll('.category-card.selected');
+                if (selectedCategories.length === 0) {
+                    alert('Please select at least one service category');
+                    isValid = false;
+                }
+            }
+            
+            if (isValid) {
+                nextStep();
+            }
+        }
+
+        function showError(input) {
+            input.classList.add('error');
+            const errorMsg = input.parentElement.querySelector('.error-message');
+            if (errorMsg) {
+                errorMsg.classList.add('show');
+            }
+        }
+
+        function hideError(input) {
+            input.classList.remove('error');
+            const errorMsg = input.parentElement.querySelector('.error-message');
+            if (errorMsg) {
+                errorMsg.classList.remove('show');
+            }
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function toggleCategory(element) {
+            element.classList.toggle('selected');
+        }
+
+        function toggleTimeSlot(element) {
+            element.classList.toggle('selected');
+        }
+
+        function selectGender(element, gender) {
+            document.querySelectorAll('.gender-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.querySelector('.avatar-preview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Avatar">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function detectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    // In real app, reverse geocode to get address
+                    document.getElementById('address').value = 'Location detected successfully';
+                    alert('Location detected! Address has been auto-filled.');
+                }, function(error) {
+                    alert('Unable to detect location. Please enter manually.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+
+        function completeOnboarding() {
+            // Simulate saving data
+            setTimeout(() => {
+                currentStep = 5;
+                showStep(currentStep);
+            }, 500);
+        }
+
+        function goToDashboard() {
+            alert('Redirecting to your dashboard...');
+            // In real app, redirect to dashboard
+            window.location.href = '#dashboard';
+        }
+
+        // Auto-focus first input on step change
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.target.classList.contains('active')) {
+                        const firstInput = mutation.target.querySelector('.form-input');
+                        if (firstInput) {
+                            setTimeout(() => firstInput.focus(), 100);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.form-step').forEach(step => {
+                observer.observe(step, { attributes: true, attributeFilter: ['class'] });
+            });
+        });
+    </script>
+</body>
+</html>

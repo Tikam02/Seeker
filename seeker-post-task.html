@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Task - Seeker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #f1f5f9;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .task-form-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Header */
+        .form-header {
+            background: var(--gradient);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            opacity: 0.95;
+            font-size: 1.1rem;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--light-gray);
+            z-index: -1;
+        }
+
+        .progress-step.active:not(:last-child)::after {
+            background: var(--primary);
+        }
+
+        .progress-step.completed:not(:last-child)::after {
+            background: var(--success);
+        }
+
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-icon {
+            background: var(--gradient);
+            color: white;
+            transform: scale(1.2);
+        }
+
+        .progress-step.completed .step-icon {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .progress-step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Content */
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .required {
+            color: var(--danger);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+
+        /* Category Grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .category-item {
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .category-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .category-item.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-name {
+            font-size: 0.875rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Budget Section */
+        .budget-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .budget-option {
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .budget-option:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .budget-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .budget-option-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .budget-option-desc {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .budget-input-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .currency-symbol {
+            font-size: 1.5rem;
+            color: var(--gray);
+        }
+
+        .budget-input {
+            flex: 1;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        .budget-suggestion {
+            background: var(--light-gray);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .suggestion-title {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .suggestion-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .suggestion-pill {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-pill:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Location & Time */
+        .location-type {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .location-option {
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .location-option:hover {
+            border-color: var(--primary);
+        }
+
+        .location-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .location-icon {
+            font-size: 1.5rem;
+        }
+
+        .date-time-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .urgency-normal {
+            background: var(--light-gray);
+            color: var(--gray);
+        }
+
+        .urgency-soon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border-color: var(--warning);
+        }
+
+        .urgency-urgent {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed var(--light-gray);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(99, 102, 241, 0.02);
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: var(--light-gray);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Review Section */
+        .review-card {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-title {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .edit-btn {
+            color: var(--primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .review-content {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .review-label {
+            color: var(--gray);
+        }
+
+        .review-value {
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .total-row {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--dark);
+        }
+
+        .total-row .review-value {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Helper Tips */
+        .helper-tip {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .helper-tip-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .helper-tip-content {
+            font-size: 0.875rem;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+
+        /* Success Modal */
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-modal.active {
+            display: flex;
+        }
+
+        .success-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            text-align: center;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 1.75rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .helper-count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+            }
+
+            .form-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .budget-options,
+            .location-type,
+            .date-time-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-steps {
+                padding: 1rem;
+            }
+
+            .step-label {
+                display: none;
+            }
+
+            .form-content {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--gradient);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Seeker</div>
+            <div class="user-info">
+                <span>Hi, Rahul! 👋</span>
+                <div class="user-avatar">R</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="task-form-card">
+            <!-- Form Header -->
+            <div class="form-header">
+                <h1>Post Your Task</h1>
+                <p>Get quotes from verified helpers in minutes</p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-icon">1</div>
+                    <div class="step-label">Task Details</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">Budget</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-icon">3</div>
+                    <div class="step-label">Location & Time</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-icon">4</div>
+                    <div class="step-label">Review & Post</div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <div class="form-content">
+                <!-- Step 1: Task Details -->
+                <div class="form-section active" data-step="1">
+                    <div class="helper-tip">
+                        <div class="helper-tip-title">
+                            <span>💡</span>
+                            <span>Pro Tip</span>
+                        </div>
+                        <div class="helper-tip-content">
+                            Be specific about your needs. Tasks with clear descriptions receive 3x more responses from helpers!
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Task Title <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="taskTitle" placeholder="e.g., Need help moving furniture to new apartment" maxlength="100">
+                        <div class="char-count">0/100</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Category <span class="required">*</span>
+                        </label>
+                        <div class="category-grid">
+                            <div class="category-item" onclick="selectCategory(this, 'cleaning')">
+                                <div class="category-icon">🏠</div>
+                                <div class="category-name">Home Cleaning</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'repairs')">
+                                <div class="category-icon">🔧</div>
+                                <div class="category-name">Repairs</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'tech')">
+                                <div class="category-icon">💻</div>
+                                <div class="category-name">Tech Support</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'moving')">
+                                <div class="category-icon">🚚</div>
+                                <div class="category-name">Moving</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'electrical')">
+                                <div class="category-icon">⚡</div>
+                                <div class="category-name">Electrical</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'plumbing')">
+                                <div class="category-icon">🚿</div>
+                                <div class="category-name">Plumbing</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'painting')">
+                                <div class="category-icon">🎨</div>
+                                <div class="category-name">Painting</div>
+                            </div>
+                            <div class="category-item" onclick="selectCategory(this, 'other')">
+                                <div class="category-icon">📋</div>
+                                <div class="category-name">Other</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Task Description <span class="required">*</span>
+                        </label>
+                        <textarea class="form-textarea" id="taskDescription" placeholder="Describe what you need help with. Include any specific requirements, tools needed, or special instructions..." maxlength="500"></textarea>
+                        <div class="char-count">0/500</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Add Photos (Optional)
+                        </label>
+                        <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                            <div class="upload-icon">📸</div>
+                            <div class="upload-text">Click to upload images</div>
+                            <div class="upload-hint">Upload up to 5 photos (JPG, PNG, max 5MB each)</div>
+                        </div>
+                        <input type="file" id="imageInput" style="display: none;" accept="image/*" multiple onchange="handleImageUpload(event)">
+                        <div class="image-preview-grid" id="imagePreview"></div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="nextStep()">Continue to Budget →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Budget -->
+                <div class="form-section" data-step="2">
+                    <div class="helper-tip">
+                        <div class="helper-tip-title">
+                            <span>💰</span>
+                            <span>Pricing Guide</span>
+                        </div>
+                        <div class="helper-tip-content">
+                            Setting a fair budget attracts quality helpers. Check suggested prices based on similar tasks in your area.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            How would you like to set your budget? <span class="required">*</span>
+                        </label>
+                        <div class="budget-options">
+                            <div class="budget-option selected" onclick="selectBudgetType(this, 'fixed')">
+                                <div class="budget-option-title">Fixed Price</div>
+                                <div class="budget-option-desc">Set a total amount for the task</div>
+                            </div>
+                            <div class="budget-option" onclick="selectBudgetType(this, 'hourly')">
+                                <div class="budget-option-title">Hourly Rate</div>
+                                <div class="budget-option-desc">Pay per hour of work</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="fixedBudgetGroup">
+                        <label class="form-label">
+                            Your Budget <span class="required">*</span>
+                        </label>
+                        <div class="budget-input-group">
+                            <span class="currency-symbol">₹</span>
+                            <input type="number" class="form-input budget-input" id="budgetAmount" placeholder="Enter amount">
+                        </div>
+                        
+                        <div class="budget-suggestion">
+                            <div class="suggestion-title">Suggested prices for similar tasks:</div>
+                            <div class="suggestion-pills">
+                                <div class="suggestion-pill" onclick="setBudget(500)">₹500</div>
+                                <div class="suggestion-pill" onclick="setBudget(1000)">₹1,000</div>
+                                <div class="suggestion-pill" onclick="setBudget(1500)">₹1,500</div>
+                                <div class="suggestion-pill" onclick="setBudget(2000)">₹2,000</div>
+                                <div class="suggestion-pill" onclick="setBudget(3000)">₹3,000</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="hourlyBudgetGroup" style="display: none;">
+                        <label class="form-label">
+                            Hourly Rate <span class="required">*</span>
+                        </label>
+                        <div class="budget-input-group">
+                            <span class="currency-symbol">₹</span>
+                            <input type="number" class="form-input budget-input" id="hourlyRate" placeholder="Per hour">
+                        </div>
+                        
+                        <label class="form-label" style="margin-top: 1rem;">
+                            Estimated Hours <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="estimatedHours" placeholder="How many hours?">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Payment Method
+                        </label>
+                        <select class="form-select">
+                            <option>Cash on completion</option>
+                            <option>UPI transfer</option>
+                            <option>Bank transfer</option>
+                            <option>To be discussed</option>
+                        </select>
+                    </div>
+
+                    <div class="toggle-switch">
+                        <label class="switch">
+                            <input type="checkbox" id="negotiable">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="negotiable">Price is negotiable</label>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                        <button class="btn btn-primary" onclick="nextStep()">Continue to Location →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Location & Time -->
+                <div class="form-section" data-step="3">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Where do you need this done? <span class="required">*</span>
+                        </label>
+                        <div class="location-type">
+                            <div class="location-option selected" onclick="selectLocationType(this, 'home')">
+                                <span class="location-icon">🏠</span>
+                                <div>
+                                    <div style="font-weight: 600;">My Home</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray);">123, MG Road, Indore</div>
+                                </div>
+                            </div>
+                            <div class="location-option" onclick="selectLocationType(this, 'other')">
+                                <span class="location-icon">📍</span>
+                                <div>
+                                    <div style="font-weight: 600;">Different Location</div>
+                                    <div style="font-size: 0.875rem; color: var(--gray);">Specify address</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="otherLocationGroup" style="display: none;">
+                        <label class="form-label">
+                            Task Location <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" placeholder="Enter complete address">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            When do you need this done? <span class="required">*</span>
+                        </label>
+                        <div class="date-time-grid">
+                            <div>
+                                <label class="form-label" style="font-weight: 400; font-size: 0.875rem;">Date</label>
+                                <input type="date" class="form-input" id="taskDate">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-weight: 400; font-size: 0.875rem;">Time</label>
+                                <select class="form-select">
+                                    <option>Morning (6 AM - 12 PM)</option>
+                                    <option>Afternoon (12 PM - 5 PM)</option>
+                                    <option>Evening (5 PM - 9 PM)</option>
+                                    <option>Flexible</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Urgency Level</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="urgency-badge urgency-normal" onclick="selectUrgency(this, 'normal')">
+                                <span>📅</span>
+                                <span>Flexible (Within a week)</span>
+                            </div>
+                            <div class="urgency-badge urgency-soon" onclick="selectUrgency(this, 'soon')">
+                                <span>⏰</span>
+                                <span>Soon (Within 2 days)</span>
+                            </div>
+                            <div class="urgency-badge urgency-urgent" onclick="selectUrgency(this, 'urgent')">
+                                <span>🚨</span>
+                                <span>URGENT (Today)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Any specific requirements for the helper?
+                        </label>
+                        <textarea class="form-textarea" placeholder="e.g., Must bring own tools, need 2 people, prefer experienced professional..." style="min-height: 80px;"></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                        <button class="btn btn-primary" onclick="nextStep()">Review Task →</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Post -->
+                <div class="form-section" data-step="4">
+                    <div class="helper-tip">
+                        <div class="helper-tip-title">
+                            <span>✅</span>
+                            <span>Almost Done!</span>
+                        </div>
+                        <div class="helper-tip-content">
+                            Review your task details. You can edit them anytime after posting.
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-title">Task Summary</div>
+                            <span class="edit-btn" onclick="goToStep(1)">Edit</span>
+                        </div>
+                        <div class="review-content">
+                            <strong>Need help moving furniture to new apartment</strong><br>
+                            Moving 2 beds, 1 sofa, dining table, and boxes from 2nd floor to ground floor. Need 2 people with a small truck. Distance is about 5km within Indore.
+                        </div>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-title">Details</div>
+                        </div>
+                        <div class="review-content">
+                            <div class="review-item">
+                                <span class="review-label">Category</span>
+                                <span class="review-value">Moving</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Location</span>
+                                <span class="review-value">123, MG Road, Indore</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Date & Time</span>
+                                <span class="review-value">Nov 15, 2024 - Morning</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Urgency</span>
+                                <span class="review-value">Within 2 days</span>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Payment Method</span>
+                                <span class="review-value">Cash on completion</span>
+                            </div>
+                            <div class="review-item total-row">
+                                <span class="review-label"><strong>Your Budget</strong></span>
+                                <span class="review-value">₹2,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--light-gray); padding: 1rem; border-radius: 12px; margin: 1rem 0;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span style="font-size: 2rem;">🔔</span>
+                            <div>
+                                <div style="font-weight: 600; color: var(--dark);">Get instant notifications</div>
+                                <div style="font-size: 0.875rem; color: var(--gray);">We'll notify you when helpers respond to your task</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                        <button class="btn btn-success" onclick="postTask()">Post Task 🚀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">Task Posted Successfully!</h2>
+            <p class="success-message">Your task is now live and visible to helpers in your area.</p>
+            
+            <div class="helper-count">47 Helpers</div>
+            <p style="color: var(--gray); margin-bottom: 2rem;">are viewing tasks in your category right now</p>
+            
+            <button class="btn btn-primary" onclick="goToDashboard()">View Responses →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedCategory = '';
+        let uploadedImages = [];
+
+        function updateProgress() {
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                    step.querySelector('.step-icon').innerHTML = '✓';
+                } else if (stepNum === currentStep) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                    if (stepNum > 1) {
+                        step.querySelector('.step-icon').innerHTML = stepNum;
+                    }
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelector(`.form-section[data-step="${step}"]`).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            if (validateCurrentStep()) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function previousStep() {
+            currentStep--;
+            showStep(currentStep);
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            showStep(currentStep);
+        }
+
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const title = document.getElementById('taskTitle').value;
+                const description = document.getElementById('taskDescription').value;
+                
+                if (!title.trim()) {
+                    alert('Please enter a task title');
+                    return false;
+                }
+                if (!selectedCategory) {
+                    alert('Please select a category');
+                    return false;
+                }
+                if (!description.trim()) {
+                    alert('Please describe your task');
+                    return false;
+                }
+            } else if (currentStep === 2) {
+                const budget = document.getElementById('budgetAmount').value;
+                if (!budget || budget <= 0) {
+                    alert('Please enter your budget');
+                    return false;
+                }
+            } else if (currentStep === 3) {
+                const date = document.getElementById('taskDate').value;
+                if (!date) {
+                    alert('Please select a date');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function selectCategory(element, category) {
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedCategory = category;
+        }
+
+        function selectBudgetType(element, type) {
+            document.querySelectorAll('.budget-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            if (type === 'fixed') {
+                document.getElementById('fixedBudgetGroup').style.display = 'block';
+                document.getElementById('hourlyBudgetGroup').style.display = 'none';
+            } else {
+                document.getElementById('fixedBudgetGroup').style.display = 'none';
+                document.getElementById('hourlyBudgetGroup').style.display = 'block';
+            }
+        }
+
+        function setBudget(amount) {
+            document.getElementById('budgetAmount').value = amount;
+        }
+
+        function selectLocationType(element, type) {
+            document.querySelectorAll('.location-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            if (type === 'other') {
+                document.getElementById('otherLocationGroup').style.display = 'block';
+            } else {
+                document.getElementById('otherLocationGroup').style.display = 'none';
+            }
+        }
+
+        function selectUrgency(element, level) {
+            document.querySelectorAll('.urgency-badge').forEach(badge => {
+                badge.style.opacity = '0.5';
+            });
+            element.style.opacity = '1';
+        }
+
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const previewGrid = document.getElementById('imagePreview');
+            
+            for (let i = 0; i < files.length && uploadedImages.length < 5; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const imageId = Date.now() + i;
+                    uploadedImages.push({ id: imageId, url: e.target.result });
+                    
+                    const previewHtml = `
+                        <div class="image-preview" id="image-${imageId}">
+                            <img src="${e.target.result}" alt="Preview">
+                            <div class="remove-image" onclick="removeImage(${imageId})">×</div>
+                        </div>
+                    `;
+                    previewGrid.insertAdjacentHTML('beforeend', previewHtml);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage(imageId) {
+            uploadedImages = uploadedImages.filter(img => img.id !== imageId);
+            document.getElementById(`image-${imageId}`).remove();
+        }
+
+        function postTask() {
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function goToDashboard() {
+            window.location.href = '#dashboard';
+        }
+
+        // Character counter
+        document.getElementById('taskTitle').addEventListener('input', function() {
+            const count = this.value.length;
+            this.nextElementSibling.textContent = `${count}/100`;
+        });
+
+        document.getElementById('taskDescription').addEventListener('input', function() {
+            const count = this.value.length;
+            this.nextElementSibling.textContent = `${count}/500`;
+        });
+
+        // Set minimum date to today
+        document.getElementById('taskDate').min = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

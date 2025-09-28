@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Block sensitive pages
+Disallow: /seeker-dashboard
+Disallow: /helper-dashboard
+Disallow: /admin
+
+# Allow public pages
+Allow: /
+Allow: /seeker-onboarding
+Allow: /helper-onboarding
+
+Sitemap: https://seeker-app.com/sitemap.xml

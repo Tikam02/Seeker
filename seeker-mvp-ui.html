@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seeker - Connect Directly, Pay Directly</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --seeker-gradient: linear-gradient(135deg, #667eea 0%, #6366f1 100%);
+            --helper-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .login-btn {
+            padding: 0.5rem 1.5rem;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -100px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -150px;
+            left: -100px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            animation: slideInLeft 1s ease-out 0.2s both;
+        }
+
+        .zero-commission-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* User Selection Cards */
+        .user-selection {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            animation: slideInRight 1s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .selection-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .selection-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .user-card {
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.3));
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .user-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .seeker-card {
+            background: var(--seeker-gradient);
+            color: white;
+        }
+
+        .helper-card {
+            background: var(--helper-gradient);
+            color: white;
+        }
+
+        .user-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-button {
+            padding: 0.8rem 2rem;
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-button:hover {
+            background: white;
+            color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* Registration Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--dark);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-type-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .phone-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .phone-input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .phone-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .country-code {
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+            font-size: 1rem;
+            width: 80px;
+        }
+
+        .phone-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .phone-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .otp-section {
+            display: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-section.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient);
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-description {
+            color: var(--gray);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .user-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .features-header h2 {
+                font-size: 2rem;
+            }
+
+            .otp-inputs {
+                gap: 0.3rem;
+            }
+
+            .otp-input {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .resend-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .resend-link:hover {
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Seeker</div>
+            <div class="nav-links">
+                <a href="#how-it-works">How it Works</a>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <button class="login-btn" onclick="showLogin()">Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="zero-commission-badge">🎉 ZERO COMMISSION PLATFORM</div>
+                <h1>Connect Directly, Pay Directly</h1>
+                <p>India's first service marketplace where helpers keep 100% of their earnings. No hidden fees, no commissions.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <div style="padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 10px;">
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--primary);">10,000+</div>
+                        <div style="color: var(--gray);">Verified Helpers</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 10px;">
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--secondary);">50,000+</div>
+                        <div style="color: var(--gray);">Happy Seekers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-selection">
+                <div class="selection-header">
+                    <h2>Get Started in 30 Seconds</h2>
+                    <p style="color: var(--gray);">Choose your role to begin</p>
+                </div>
+                <div class="user-cards">
+                    <div class="user-card seeker-card" onclick="openRegistration('seeker')">
+                        <div class="card-icon">🔍</div>
+                        <div class="card-title">I'm a Seeker</div>
+                        <div class="card-description">Find trusted helpers for any task - from home repairs to tech support</div>
+                        <button class="card-button">Find Helpers →</button>
+                    </div>
+                    <div class="user-card helper-card" onclick="openRegistration('helper')">
+                        <div class="card-icon">💼</div>
+                        <div class="card-title">I'm a Helper</div>
+                        <div class="card-description">Grow your business with zero commission. Keep 100% of your earnings</div>
+                        <button class="card-button">Start Earning →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <div class="features-header">
+                <h2>Why Choose Seeker?</h2>
+                <p style="color: var(--gray); font-size: 1.2rem;">Revolutionary features that put you first</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-title">Zero Commission</div>
+                    <div class="feature-description">Helpers keep 100% of their earnings. Direct payments between seekers and helpers.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <div class="feature-title">Verified Professionals</div>
+                    <div class="feature-description">All helpers undergo thorough background verification and skill assessment.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Instant Matching</div>
+                    <div class="feature-description">Smart algorithms connect you with the perfect helper in minutes.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">Secure & Safe</div>
+                    <div class="feature-description">Your safety is our priority with verified profiles and secure communications.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-title">Direct Communication</div>
+                    <div class="feature-description">Chat, call, or video directly with helpers. No middleman interference.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌟</div>
+                    <div class="feature-title">Transparent Reviews</div>
+                    <div class="feature-description">Real reviews from verified users help you make informed decisions.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Modal -->
+    <div class="modal" id="registrationModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h3 id="modalTitle">Join Seeker</h3>
+                <div class="user-type-badge" id="userTypeBadge" style="background: var(--gradient);">Seeker</div>
+            </div>
+            
+            <div class="phone-input-group">
+                <label>Enter your mobile number</label>
+                <div class="phone-input-wrapper">
+                    <select class="country-code">
+                        <option>+91</option>
+                        <option>+1</option>
+                        <option>+44</option>
+                    </select>
+                    <input type="tel" class="phone-input" id="phoneInput" placeholder="98765 43210" maxlength="10">
+                </div>
+            </div>
+
+            <div class="otp-section" id="otpSection">
+                <label>Enter OTP sent to your mobile</label>
+                <div class="otp-inputs">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                    <input type="text" class="otp-input" maxlength="1">
+                </div>
+                <div class="resend-link" onclick="resendOTP()">Resend OTP</div>
+            </div>
+
+            <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+                <span id="btnText">Send OTP</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentUserType = '';
+        let otpSent = false;
+
+        function openRegistration(userType) {
+            currentUserType = userType;
+            const modal = document.getElementById('registrationModal');
+            const badge = document.getElementById('userTypeBadge');
+            const title = document.getElementById('modalTitle');
+            
+            modal.classList.add('active');
+            
+            if (userType === 'seeker') {
+                badge.textContent = 'Seeker';
+                badge.style.background = 'var(--seeker-gradient)';
+                title.textContent = 'Find Trusted Helpers';
+            } else {
+                badge.textContent = 'Helper';
+                badge.style.background = 'var(--helper-gradient)';
+                title.textContent = 'Start Earning Today';
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('registrationModal');
+            modal.classList.remove('active');
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('otpSection').classList.remove('active');
+            document.getElementById('btnText').textContent = 'Send OTP';
+            otpSent = false;
+            
+            // Clear OTP inputs
+            const otpInputs = document.querySelectorAll('.otp-input');
+            otpInputs.forEach(input => input.value = '');
+        }
+
+        function handleSubmit() {
+            const phoneInput = document.getElementById('phoneInput');
+            const btnText = document.getElementById('btnText');
+            
+            if (!otpSent) {
+                if (phoneInput.value.length !== 10) {
+                    alert('Please enter a valid 10-digit mobile number');
+                    return;
+                }
+                
+                // Show loading
+                btnText.innerHTML = '<span class="loading"></span>';
+                
+                // Simulate OTP sending
+                setTimeout(() => {
+                    document.getElementById('otpSection').classList.add('active');
+                    btnText.textContent = 'Verify & Continue';
+                    otpSent = true;
+                    
+                    // Focus first OTP input
+                    document.querySelector('.otp-input').focus();
+                }, 1500);
+            } else {
+                // Verify OTP
+                const otpInputs = document.querySelectorAll('.otp-input');
+                let otp = '';
+                otpInputs.forEach(input => otp += input.value);
+                
+                if (otp.length !== 6) {
+                    alert('Please enter the complete 6-digit OTP');
+                    return;
+                }
+                
+                btnText.innerHTML = '<span class="loading"></span>';
+                
+                // Simulate verification
+                setTimeout(() => {
+                    alert(`Welcome to Seeker! You've successfully registered as a ${currentUserType}.`);
+                    closeModal();
+                }, 1500);
+            }
+        }
+
+        function resendOTP() {
+            const btnText = document.getElementById('btnText');
+            btnText.innerHTML = '<span class="loading"></span>';
+            
+            setTimeout(() => {
+                btnText.textContent = 'Verify & Continue';
+                alert('OTP has been resent to your mobile number');
+            }, 1000);
+        }
+
+        function showLogin() {
+            alert('Login functionality will be implemented in the next phase');
+        }
+
+        // Auto-move to next OTP input
+        document.addEventListener('DOMContentLoaded', () => {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            
+            otpInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1) {
+                        if (index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
+                        }
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && e.target.value === '') {
+                        if (index > 0) {
+                            otpInputs[index - 1].focus();
+                        }
+                    }
+                });
+            });
+        });
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('registrationModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

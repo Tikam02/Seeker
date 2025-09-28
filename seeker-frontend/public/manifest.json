@@ -1,0 +1,115 @@
+{
+  "name": "Seeker - Connect Directly, Pay Directly",
+  "short_name": "Seeker",
+  "description": "India's first service marketplace where helpers keep 100% of their earnings. Zero commission platform connecting seekers with verified helpers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "business", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Find Helpers",
+      "short_name": "Find",
+      "description": "Find helpers for your tasks",
+      "url": "/seeker-dashboard",
+      "icons": [
+        {
+          "src": "/icons/shortcut-find.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Become Helper",
+      "short_name": "Help",
+      "description": "Start earning as a helper",
+      "url": "/helper-onboarding",
+      "icons": [
+        {
+          "src": "/icons/shortcut-help.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Post Task",
+      "short_name": "Post",
+      "description": "Post a new task",
+      "url": "/post-task",
+      "icons": [
+        {
+          "src": "/icons/shortcut-post.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshots/mobile-screenshot.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
